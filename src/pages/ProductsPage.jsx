@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-   
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // Redirect to login if not authenticated
+    }
+
     fetch("https://fakestoreapi.com/products")
       .then((res) => res.json())
       .then((data) => setProducts(data));
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="container mt-4">
@@ -28,10 +34,13 @@ const ProductList = () => {
                 <h5 className="card-title">{product.title}</h5>
                 <p className="card-text">{product.description.substring(0, 100)}...</p>
                 <p className="fw-bold">Price: ${product.price}</p>
-                <p>
-                  Rating: {product.rating.rate} ⭐ ({product.rating.count} reviews)
-                </p>
-                <button className="btn btn-primary">Buy Now</button>
+                <p>Rating: {product.rating.rate} ⭐ ({product.rating.count} reviews)</p>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate(`/product/${product.id}`)}
+                >
+                  Buy Now
+                </button>
               </div>
             </div>
           </div>
